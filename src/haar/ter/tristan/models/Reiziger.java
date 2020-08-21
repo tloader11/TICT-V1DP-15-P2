@@ -13,6 +13,9 @@ public class Reiziger
     private String achternaam;
     private Date geboortedatum;
 
+    private List<OV_Chipkaart> ovChipkaarten;
+    private List<Adres> adressen;
+
     public Reiziger()
     {
         //in afbeelding heeft Reiziger geen constructor params.
@@ -73,11 +76,28 @@ public class Reiziger
 
     public List<OV_Chipkaart> getOVChipkaarten ()
     {
-        return DatabaseConfig.ov_chipkaartDao.findByReizigerID(this.getReizigerID());
+        return this.ovChipkaarten;
+    }
+
+    public void setOvChipkaarten(List<OV_Chipkaart> ovChipkaarten) {
+        for(OV_Chipkaart ov_chipkaart : ovChipkaarten)
+        {
+            ov_chipkaart.setReizigerID(this.getReizigerID());
+        }
+        this.ovChipkaarten = ovChipkaarten;
+    }
+
+    public void setAdressen(List<Adres> adressen)
+    {
+        for(Adres adres: adressen)
+        {
+            adres.setReizigerID(this.getReizigerID());
+        }
+        this.adressen = adressen;
     }
 
     public List<Adres> getAdressen ()
     {
-        return DatabaseConfig.adresDao.findByReizigerID(this.getReizigerID());
+        return this.adressen;
     }
 }

@@ -17,7 +17,6 @@ public class AdresDaoTest implements DaoTest
         adres.setStraat("Zwanebloem");
         adres.setWoonplaats("Reeuwijk");
         adres.setAdresID(1);
-        adres.setReizigerID(1);
 
         System.out.println("CREATE TEST");
         //save

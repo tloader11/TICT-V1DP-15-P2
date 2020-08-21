@@ -11,17 +11,18 @@ public class Adres
     private String woonplaats;
     private long reizigerID;
 
+    private Reiziger reiziger;
+
     public Adres()
     {
     }
 
-    public Adres(long adresID, String postcode, String huisnummer, String straat, String woonplaats, long reizigerID) {
+    public Adres(long adresID, String postcode, String huisnummer, String straat, String woonplaats) {
         this.adresID = adresID;
         this.postcode = postcode;
         this.huisnummer = huisnummer;
         this.straat = straat;
         this.woonplaats = woonplaats;
-        this.reizigerID = reizigerID;
     }
 
     public long getAdresID() {
@@ -64,16 +65,19 @@ public class Adres
         this.woonplaats = woonplaats;
     }
 
+    public Reiziger getReiziger() {
+        return this.reiziger;
+    }
+
+    public void setReiziger(Reiziger reiziger) {
+        this.reiziger = reiziger;
+    }
+
     public long getReizigerID() {
         return reizigerID;
     }
 
     public void setReizigerID(long reizigerID) {
         this.reizigerID = reizigerID;
-    }
-
-    public Reiziger getReiziger()
-    {
-        return DatabaseConfig.reizigerDao.findByID(this.getReizigerID());
     }
 }

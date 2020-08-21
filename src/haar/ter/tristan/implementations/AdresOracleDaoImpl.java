@@ -12,6 +12,17 @@ import java.util.List;
 
 public class AdresOracleDaoImpl implements AdresDao
 {
+
+    private boolean lazyLoading = false;
+
+    public AdresOracleDaoImpl() {
+
+    }
+
+    public AdresOracleDaoImpl(boolean lazyLoading) {
+        this.lazyLoading = lazyLoading;
+    }
+
     List<Adres> adressen = new ArrayList<>();
     @Override
     public List<Adres> findAll() {
@@ -29,8 +40,8 @@ public class AdresOracleDaoImpl implements AdresDao
                                 rs.getString("POSTCODE"),
                                 rs.getString("HUISNUMMER"),
                                 rs.getString("STRAAT"),
-                                rs.getString("WOONPLAATS"),
-                                rs.getInt("REIZIGERID")
+                                rs.getString("WOONPLAATS")
+//                                rs.getInt("REIZIGERID")
                         )
                 );
             }
@@ -59,8 +70,8 @@ public class AdresOracleDaoImpl implements AdresDao
                                 rs.getString("POSTCODE"),
                                 rs.getString("HUISNUMMER"),
                                 rs.getString("STRAAT"),
-                                rs.getString("WOONPLAATS"),
-                                rs.getInt("REIZIGERID")
+                                rs.getString("WOONPLAATS")
+//                                rs.getInt("REIZIGERID")
                         )
                 );
             }
@@ -87,8 +98,8 @@ public class AdresOracleDaoImpl implements AdresDao
                     rs.getString("POSTCODE"),
                     rs.getString("HUISNUMMER"),
                     rs.getString("STRAAT"),
-                    rs.getString("WOONPLAATS"),
-                    rs.getInt("REIZIGERID")
+                    rs.getString("WOONPLAATS")
+//                    rs.getInt("REIZIGERID")
             );
             rs.close();
             stmt.close();
@@ -131,7 +142,7 @@ public class AdresOracleDaoImpl implements AdresDao
                 "HUISNUMMER='" + adres.getHuisnummer()+"',"+
                 "STRAAT='" + adres.getStraat()+"',"+
                 "WOONPLAATS='" + adres.getWoonplaats()+"',"+
-                "REIZIGERID=" + adres.getReizigerID()+
+                "REIZIGERID=" + adres.getReiziger().getReizigerID()+
                 " WHERE ADRESID=" + adres.getAdresID();
         try {
             Statement stmt = this.connection.createStatement();
