@@ -106,8 +106,7 @@ public class Main {
         DatabaseConfig.reizigerDao.delete(reiziger.getReizigerID());
 
         kaart = DatabaseConfig.ov_chipkaartDao.findByID(1); //should be gone, as OV chipkaarten are cascaded.
-
-        System.out.println(kaart);
+        System.out.println(kaart);  //is indeed null now
 
 
 
