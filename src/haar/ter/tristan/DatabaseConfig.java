@@ -11,7 +11,6 @@ public class DatabaseConfig
     public static DatabaseDao databaseDao = new OracleDatabaseDao();
     public static AdresDao adresDao = new AdresOracleDaoImpl();
     public static OV_ChipkaartDao ov_chipkaartDao = new OV_ChipkaartOracleDaoImpl();
-    public static OV_Chipkaart_ProductDao ov_chipkaart_productDao = new OV_Chipkaart_ProductOracleDaoImpl();
     public static ProductDao productDao = new ProductOracleDaoImpl();
     public static ReizigerDao reizigerDao = new ReizigerOracleDaoImpl();
 

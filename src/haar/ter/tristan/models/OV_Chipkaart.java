@@ -3,6 +3,7 @@ package haar.ter.tristan.models;
 import haar.ter.tristan.DatabaseConfig;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OV_Chipkaart
@@ -15,7 +16,7 @@ public class OV_Chipkaart
 
     private Reiziger reiziger;
 
-    private List<OV_Chipkaart_Product> ov_chipkaart_products;
+    private List<Product> products = new ArrayList<>();
 
     public OV_Chipkaart()
     {
@@ -83,12 +84,11 @@ public class OV_Chipkaart
         this.reiziger = reiziger;
     }
 
-    public List<OV_Chipkaart_Product> getOV_Chipkaart_producten()
-    {
-        if(this.ov_chipkaart_products == null)
-        {
-            this.ov_chipkaart_products = DatabaseConfig.ov_chipkaart_productDao.findByKaartnummer(this.getKaartNummer());
-        }
-        return this.ov_chipkaart_products;
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
     }
 }

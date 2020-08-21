@@ -103,76 +103,44 @@ public class Main {
         kaart = DatabaseConfig.ov_chipkaartDao.findByID(1);
         System.out.println(reiziger.getName() + " saldo: " + kaart.getSaldo());
 
-        DatabaseConfig.reizigerDao.delete(reiziger.getReizigerID());
+//        DatabaseConfig.reizigerDao.delete(reiziger.getReizigerID());
 
-        kaart = DatabaseConfig.ov_chipkaartDao.findByID(1); //should be gone, as OV chipkaarten are cascaded.
-        System.out.println(kaart);  //is indeed null now
+//        kaart = DatabaseConfig.ov_chipkaartDao.findByID(1); //should be gone, as OV chipkaarten are cascaded.
+//        System.out.println(kaart);  //is indeed null now
 
+        List<Product> producten = new ArrayList<>();
+        producten.add(testProduct1);
+        producten.add(testProduct2);
 
+        kaart.setProducts(producten);
+        DatabaseConfig.ov_chipkaartDao.update(kaart);
 
-//        DatabaseConfig.ov_chipkaartDao.save(testOV_Chipkaart1);
-//        DatabaseConfig.ov_chipkaartDao.save(testOV_Chipkaart2);
-//        DatabaseConfig.ov_chipkaartDao.save(testOV_Chipkaart3);
-//        DatabaseConfig.adresDao.save(testAdres1);
-//        DatabaseConfig.adresDao.save(testAdres2);
-//        DatabaseConfig.adresDao.save(testAdres3);
+        kaart = DatabaseConfig.ov_chipkaartDao.findByID(1);
 
-//        //ovproductID, long kaartNummer, long productNummer, String reisproductStatus, Date lastUpdate
-//        OV_Chipkaart_Product testOV_Chipkaart_Product1 = new OV_Chipkaart_Product(1, 1, 1, "actief", Date.valueOf("2020-08-21"));
-//        OV_Chipkaart_Product testOV_Chipkaart_Product2 = new OV_Chipkaart_Product(2, 1, 4, "actief", Date.valueOf("2020-08-21"));
-//        OV_Chipkaart_Product testOV_Chipkaart_Product3 = new OV_Chipkaart_Product(3, 2, 2, "actief", Date.valueOf("2020-08-21"));
-//        OV_Chipkaart_Product testOV_Chipkaart_Product4 = new OV_Chipkaart_Product(4, 3, 3, "actief", Date.valueOf("2020-08-21"));
-//        DatabaseConfig.ov_chipkaart_productDao.save(testOV_Chipkaart_Product1);
-//        DatabaseConfig.ov_chipkaart_productDao.save(testOV_Chipkaart_Product2);
-//        DatabaseConfig.ov_chipkaart_productDao.save(testOV_Chipkaart_Product3);
-//        DatabaseConfig.ov_chipkaart_productDao.save(testOV_Chipkaart_Product4);
-//
-//        System.out.println("---==== DONE FILLING TABLES ====---");
-//
-//
-//        //someone scans their pass
-//        OV_Chipkaart kaart = DatabaseConfig.ov_chipkaartDao.findByID(1);
-//        System.out.println("Kaart gescanned: " + kaart.getKaartNummer() + ", " +
-//                "Reiziger: " + kaart.getReiziger().getName() + " " +
-//                "Met Producten:");
-//        for (OV_Chipkaart_Product ov_c_p : kaart.getOV_Chipkaart_producten())
-//        {
-//            System.out.println("\t- " + ov_c_p.getProduct().getProductNaam());
-//        }
-//        //SIMULATE OUT-OF-PRODUCT
-//        System.out.println("Before transaction: " + kaart.getSaldo());
-//
-//        kaart.setSaldo(kaart.getSaldo() - 20.43f);      //lange rit...
-//        DatabaseConfig.ov_chipkaartDao.update(kaart);   //write naar OV
-//
-//        //re-read chip to validate write
-//        kaart = DatabaseConfig.ov_chipkaartDao.findByID(kaart.getKaartNummer());
-//
-//        System.out.println("After transaction: " + kaart.getSaldo());
-//
-//        //Nu andersom; via bijvoorbeeld de balie:
-//        List<Reiziger> reizigers = DatabaseConfig.reizigerDao.findByGeboortedatum("1998-04-15");
-//        for(Reiziger reiziger : reizigers)
-//        {
-//            System.out.println(reiziger.getName() + " met adres(sen)");
-//            for(Adres adres : reiziger.getAdressen())
-//            {
-//                System.out.println(adres.getStraat() + " " + adres.getHuisnummer());
-//            }
-//        }
-//        //Medewerker selecteert de juiste reiziger op basis van het weergegeven adres bijvoorbeeld...
-//        Reiziger reiziger = reizigers.get(0);
-//        DatabaseConfig.adresDao.delete(reiziger.getAdressen().get(0).getAdresID()); //old address, he asked it to be removed for example...
-//        Adres newAdres = new Adres(4, "4321AB", "567", "NieuwStraat", "NieuwBouwPlaats", reiziger.getReizigerID());
-//        DatabaseConfig.adresDao.save(newAdres);
-//
-//        System.out.println("After adres change: ");
-//        //validate adres change
-//        reiziger = DatabaseConfig.reizigerDao.findByID(reiziger.getReizigerID());
-//        for(Adres adres : reiziger.getAdressen())
-//        {
-//            System.out.println(adres.getStraat() + " " + adres.getHuisnummer());
-//        }
+        for(Product product : kaart.getProducts())
+        {
+            System.out.println(product.getProductNaam());
+        }
+
+        Product p = DatabaseConfig.productDao.findByNummer(1);
+
+        for(OV_Chipkaart tmp_kaart : p.getOv_chipkaarten())
+        {
+            System.out.println(tmp_kaart.getKaartNummer() + " - " + tmp_kaart.getGeldigTot());
+        }
+
+        List<OV_Chipkaart> kaartenUpdate = new ArrayList<>();
+        kaartenUpdate.add(testOV_Chipkaart2);
+        p.setOv_chipkaarten(kaartenUpdate);
+
+        DatabaseConfig.productDao.update(p);
+
+        testOV_Chipkaart2 = DatabaseConfig.ov_chipkaartDao.findByID(2);
+
+        for(Product temp_prod : testOV_Chipkaart2.getProducts())
+        {
+            System.out.println("GOT: " + temp_prod.getProductNaam());
+        }
 
 
 

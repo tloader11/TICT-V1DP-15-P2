@@ -2,6 +2,7 @@ package haar.ter.tristan.implementations;
 
 import haar.ter.tristan.interfaces.AdresDao;
 import haar.ter.tristan.interfaces.OV_ChipkaartDao;
+import haar.ter.tristan.interfaces.ProductDao;
 import haar.ter.tristan.interfaces.ReizigerDao;
 import haar.ter.tristan.models.OV_Chipkaart;
 import haar.ter.tristan.models.Product;
@@ -20,9 +21,11 @@ public class OV_ChipkaartOracleDaoImpl implements OV_ChipkaartDao
     private boolean lazyLoading = false;
 
     ReizigerDao reizigerDao = null;
+    ProductDao productDao = null;
 
     public OV_ChipkaartOracleDaoImpl(){
         this.reizigerDao = new ReizigerOracleDaoImpl(true);
+        this.productDao = new ProductOracleDaoImpl(true);
     }
 
     public OV_ChipkaartOracleDaoImpl(boolean lazyLoading)
@@ -30,6 +33,7 @@ public class OV_ChipkaartOracleDaoImpl implements OV_ChipkaartDao
         this.lazyLoading = lazyLoading;
         if(!lazyLoading) {
             this.reizigerDao = new ReizigerOracleDaoImpl(true);
+            this.productDao = new ProductOracleDaoImpl(true);
         }
     }
 
@@ -51,6 +55,11 @@ public class OV_ChipkaartOracleDaoImpl implements OV_ChipkaartDao
                 );
                 if(!lazyLoading) {
                     tmp_ov_chipkaart.setReiziger(this.reizigerDao.findByID(rs.getInt("REIZIGERID")));
+                    List<Product> products = this.productDao.findByKaartnummer(tmp_ov_chipkaart.getKaartNummer());
+                    if(products != null)
+                    {
+                        tmp_ov_chipkaart.setProducts(products);
+                    }
                 }
                 ov_chipkaartList.add( tmp_ov_chipkaart );
             }
@@ -80,6 +89,7 @@ public class OV_ChipkaartOracleDaoImpl implements OV_ChipkaartDao
                 );
                 if(!lazyLoading) {
                     tmp_ov_chipkaart.setReiziger(this.reizigerDao.findByID(rs.getInt("REIZIGERID")));
+                    tmp_ov_chipkaart.setProducts(this.productDao.findByKaartnummer(tmp_ov_chipkaart.getKaartNummer()));
                 }
                 ovChipkaartMetReiziger.add( tmp_ov_chipkaart );
             }
@@ -109,19 +119,58 @@ public class OV_ChipkaartOracleDaoImpl implements OV_ChipkaartDao
 //                    rs.getInt("REIZIGERID")
             );
             if(!lazyLoading) {
-                if(this.reizigerDao == null)
-                {
-                    System.out.println("WTFFFFFFF");
-                }
                 ov_chipkaart.setReiziger(this.reizigerDao.findByID(rs.getInt("REIZIGERID")));
+                ov_chipkaart.setProducts(this.productDao.findByKaartnummer(ov_chipkaart.getKaartNummer()));
             }
             rs.close();
             stmt.close();
+
+            if(ov_chipkaart != null)
+            {
+
+            }
             return ov_chipkaart;
         }
         catch (SQLException ex)
         {
             return null;
+        }
+    }
+
+    @Override
+    public List<OV_Chipkaart> findByProductnummer(long nummer) {
+        String query = "SELECT OV_CHIPKAART.* FROM OV_CHIPKAART LEFT JOIN OV_CHIPKAART_PRODUCT ON OV_CHIPKAART_PRODUCT.KAARTNUMMER = OV_CHIPKAART.KAARTNUMMER WHERE OV_CHIPKAART.KAARTNUMMER IN (SELECT OV_CHIPKAART_PRODUCT.KAARTNUMMER FROM OV_CHIPKAART_PRODUCT WHERE PRODUCTNUMMER = "+nummer+")";
+
+        try {
+            Statement stmt = this.connection.createStatement();
+            ResultSet rs = stmt.executeQuery(query);
+            List<OV_Chipkaart> ov_chipkaarten = new ArrayList<>();
+            while (rs.next()) {
+                //productNummer, String productNaam, String beschrijving, float prijs
+                OV_Chipkaart kaart = new OV_Chipkaart(
+                        rs.getInt("KAARTNUMMER"),
+                        rs.getDate("GELDIGTOT"),
+                        rs.getShort("KLASSE"),
+                        rs.getFloat("SALDO")
+                );
+                kaart.setReizigerID(rs.getInt("REIZIGERID"));
+
+                if(!lazyLoading)
+                {
+                    kaart.setReiziger(this.reizigerDao.findByID(rs.getInt("REIZIGERID")));
+                    kaart.setProducts(this.productDao.findByKaartnummer(kaart.getKaartNummer()));
+                }
+
+                ov_chipkaarten.add( kaart );
+            }
+            rs.close();
+            stmt.close();
+            return ov_chipkaarten;
+        }
+        catch (SQLException ex)
+        {
+            ex.printStackTrace();
+            return new ArrayList<>();
         }
     }
 
@@ -143,6 +192,23 @@ public class OV_ChipkaartOracleDaoImpl implements OV_ChipkaartDao
 
             if(!lazyLoading) {
                 reizigerDao.save(ov_chipkaart.getReiziger());
+
+                String query3 = "DELETE * FROM OV_CHIPKAART_PRODUCT WHERE KAARTNUMMER="+ov_chipkaart.getKaartNummer();
+                stmt = this.connection.createStatement();
+                rs = stmt.executeQuery(query3);
+                rs.close();
+                stmt.close();
+                for (Product prod : ov_chipkaart.getProducts())
+                {
+                    String query2 = "INSERT INTO OV_CHIPKAART_PRODUCT (KAARTNUMMER, PRODUCTNUMMER) VALUES ("+
+                            ov_chipkaart.getKaartNummer()+","+
+                            prod.getProductNummer()+
+                            ")";
+                    stmt = this.connection.createStatement();
+                    rs = stmt.executeQuery(query2);
+                    rs.close();
+                    stmt.close();
+                }
             }
             return ov_chipkaart;
         }
@@ -169,6 +235,24 @@ public class OV_ChipkaartOracleDaoImpl implements OV_ChipkaartDao
 
             if(!lazyLoading) {
                 reizigerDao.update(ov_chipkaart.getReiziger());
+
+                String query3 = "DELETE FROM OV_CHIPKAART_PRODUCT WHERE KAARTNUMMER="+ov_chipkaart.getKaartNummer();
+                stmt = this.connection.createStatement();
+                rs = stmt.executeQuery(query3);
+                rs.close();
+                stmt.close();
+                for (Product prod : ov_chipkaart.getProducts())
+                {
+                    String query2 = "INSERT INTO OV_CHIPKAART_PRODUCT (KAARTNUMMER, PRODUCTNUMMER) VALUES ("+
+                            ov_chipkaart.getKaartNummer()+","+
+                            prod.getProductNummer()+
+                            ")";
+                    stmt = this.connection.createStatement();
+                    rs = stmt.executeQuery(query2);
+                    rs.close();
+                    stmt.close();
+                }
+
             }
             return ov_chipkaart;
         }
@@ -189,6 +273,7 @@ public class OV_ChipkaartOracleDaoImpl implements OV_ChipkaartDao
             stmt.close();
 
             //reiziger kan zonder chipkaarten bestaan.
+            //product kan zonder chipkaarten bestaan.
 
             return true;
         }

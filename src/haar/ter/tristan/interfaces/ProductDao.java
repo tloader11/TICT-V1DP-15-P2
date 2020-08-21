@@ -14,6 +14,8 @@ public interface ProductDao
 
     Product findByNummer(long nummer);
 
+    List<Product> findByKaartnummer(long nummer);
+
     Product save(Product product);
 
     Product update(Product product);

@@ -1,11 +1,16 @@
 package haar.ter.tristan.models;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Product
 {
     private long productNummer;
     private String productNaam;
     private String beschrijving;
     private float prijs;        //double or decimal do not seem that important for this setup.
+
+    private List<OV_Chipkaart> ov_chipkaarten = new ArrayList<>();
 
     public Product()
     {
@@ -48,5 +53,13 @@ public class Product
 
     public void setPrijs(float prijs) {
         this.prijs = prijs;
+    }
+
+    public List<OV_Chipkaart> getOv_chipkaarten() {
+        return ov_chipkaarten;
+    }
+
+    public void setOv_chipkaarten(List<OV_Chipkaart> ov_chipkaarten) {
+        this.ov_chipkaarten = ov_chipkaarten;
     }
 }
